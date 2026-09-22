@@ -1,51 +1,53 @@
 ---
+import "../global.css";
+import Header from "../components/shared/Header.astro";
+import Footer from "../components/shared/Footer.astro";
+import CartDrawer from "../components/shared/CartDrawer.astro";
+
 interface Props {
-	title: string;
+  title: string;
 }
 
 const { title } = Astro.props;
+const description = "Descubre figuras de Origami 3D hechas a mano y kits DIY para construir tus propias esculturas de papel. Arte artesanal único y premium.";
 ---
 
 <!doctype html>
-<html lang="es" class="scroll-smooth">
+<html lang="es" class="scroll-smooth bg-[#050505] overflow-y-scroll">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content={description} />
+		
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Origami3D Art" />
+		
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{title}</title>
-		<!-- Fuente moderna de Google Fonts -->
+		
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+		
+		<!-- Dependencias GSAP Globales -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" is:inline></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" is:inline></script>
 	</head>
-	<body class="bg-slate-50 text-slate-800 font-['Poppins'] antialiased selection:bg-emerald-500 selection:text-white">
-		<slot />
+	<body class="bg-[#050505] bg-[radial-gradient(ellipse_100%_70%_at_50%_0%,rgba(16,185,129,0.06),rgba(5,5,5,0)_60%),radial-gradient(ellipse_80%_60%_at_50%_100%,rgba(24,24,27,0.4),rgba(5,5,5,0))] text-zinc-300 font-['Inter'] antialiased selection:bg-emerald-500/20 selection:text-emerald-300 min-h-screen flex flex-col relative overflow-x-hidden">
+		
+		<Header />
+		
+		<main class="flex-1 flex flex-col">
+			<slot />
+		</main>
 
-		<!-- Lógica para Animaciones de Scroll -->
-		<script>
-			const observer = new IntersectionObserver((entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						entry.target.classList.add('show');
-					}
-				});
-			}, { threshold: 0.1 });
+		<Footer />
+		<CartDrawer />
 
-			const hiddenElements = document.querySelectorAll('.animate-on-scroll');
-			hiddenElements.forEach((el) => observer.observe(el));
-		</script>
+		<!-- Inicialización de utilidades globales -->
+		<script src="../scripts/globalAnimations.ts"></script>
+		<script src="../scripts/modalLogic.ts"></script>
 	</body>
 </html>
-
-<style is:global>
-	/* Clases base para animaciones */
-	.animate-on-scroll {
-		opacity: 0;
-		transform: translateY(30px);
-		transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-	}
-	.animate-on-scroll.show {
-		opacity: 1;
-		transform: translateY(0);
-	}
-</style>

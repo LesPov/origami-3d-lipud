@@ -1,0 +1,386 @@
+---
+import ProductCard from "./ProductCard.astro";
+import type { Producto } from "../data/productos";
+
+interface Props {
+  productos: Producto[];
+}
+
+const { productos } = Astro.props;
+
+// Filtro de seguridad: Excluimos borradores, productos sin precio válido o sin nombre.
+const productosValidos = productos.filter(p => p.precioBase > 0 && p.nombre && p.nombre.trim() !== '');
+---
+
+<section id="catalogo" class="py-24 px-6 max-w-[90rem] mx-auto border-t border-white/5 catalog-section">
+  <!-- Toolbar Superior -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+    <div>
+      <div class="flex items-center gap-3 mb-3">
+        <span class="w-6 h-[1px] bg-emerald-500 block"></span>
+        <p class="text-xs text-emerald-400 uppercase tracking-widest font-medium">Galería Completa</p>
+      </div>
+      <h2 class="text-4xl md:text-5xl font-serif text-white tracking-tight">Catálogo</h2>
+      <p id="results-count" class="text-zinc-400 text-sm mt-2 font-normal">Cargando figuras...</p>
+    </div>
+
+    <!-- Controles Derecha: Buscador + Filtros + Sort -->
+    <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+      
+      <!-- BUSCADOR PREMIUM -->
+      <div class="relative w-full sm:w-72 group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-emerald-400 transition-colors pointer-events-none">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          id="catalog-search" 
+          placeholder="Buscar una figura..." 
+          class="w-full bg-[#0c0c0e] border border-white/10 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 rounded-2xl pl-10 pr-10 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-all shadow-inner"
+        />
+        <button id="clear-search-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors hidden" aria-label="Limpiar búsqueda">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="flex w-full sm:w-auto gap-3">
+        <!-- Botón Filtros Mobile -->
+        <button id="mobile-filter-toggle" class="lg:hidden flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#0c0c0e] hover:bg-zinc-800 border border-white/10 text-white px-5 py-3 rounded-2xl transition-colors text-sm font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+          Filtros
+        </button>
+
+        <!-- Ordenamiento (Sort) -->
+        <div class="relative flex-1 sm:flex-none flex items-center bg-[#0c0c0e] border border-white/10 px-4 py-3 rounded-2xl text-sm transition-all hover:border-white/20 focus-within:border-emerald-500/50">
+          <select id="sort-select" class="bg-transparent text-white focus:outline-none cursor-pointer w-full pr-6 appearance-none font-medium text-xs sm:text-sm">
+            <option value="recomendados" class="bg-zinc-900 text-white">Recomendados</option>
+            <option value="precio-asc" class="bg-zinc-900 text-white">Precio: Menor a Mayor</option>
+            <option value="precio-desc" class="bg-zinc-900 text-white">Precio: Mayor a Menor</option>
+            <option value="piezas-desc" class="bg-zinc-900 text-white">Más piezas</option>
+            <option value="piezas-asc" class="bg-zinc-900 text-white">Menos piezas</option>
+            <option value="nombre-asc" class="bg-zinc-900 text-white">Nombre: A-Z</option>
+          </select>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none text-zinc-400 absolute right-3.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layout Principal -->
+  <div class="flex flex-col lg:flex-row items-start gap-10 w-full relative">
+    <div id="filter-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300 lg:hidden cursor-pointer"></div>
+
+    <!-- Sidebar Filtros -->
+    <aside id="filter-drawer" class="fixed inset-y-0 left-0 z-50 w-[85%] max-w-sm bg-[#0a0a0a] border-r border-white/10 transform -translate-x-full transition-transform duration-300 lg:relative lg:translate-x-0 lg:w-72 lg:flex-shrink-0 lg:border-r-0 lg:bg-transparent lg:z-10 h-full overflow-y-auto lg:overflow-visible no-scrollbar lg:h-auto lg:sticky lg:top-28">
+      <div class="p-6 lg:p-7 lg:bg-[#0c0c0e]/80 lg:backdrop-blur-xl lg:rounded-3xl lg:border lg:border-white/10 lg:shadow-2xl shadow-black/40 min-h-full lg:min-h-0 flex flex-col">
+        <div class="flex justify-between items-center mb-7 pb-4 border-b border-white/5">
+          <h2 class="text-lg font-serif text-white flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            Filtros
+          </h2>
+          <div class="flex items-center gap-4">
+            <button id="reset-filters" class="text-[11px] uppercase tracking-wider text-zinc-400 hover:text-emerald-400 transition-colors">Limpiar</button>
+            <button id="close-filter" class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white lg:hidden">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-8 flex-1">
+          <div>
+            <h3 class="text-white font-medium mb-3.5 text-xs uppercase tracking-wider text-zinc-300">Colecciones</h3>
+            <div class="space-y-2.5 text-zinc-400 text-sm">
+              {["Todos", "Animales", "Personajes", "Geométricos", "Anime"].map((cat, idx) => (
+                  <label class="flex items-center gap-3 cursor-pointer hover:text-white transition-colors group py-1">
+                    <div class="relative flex items-center justify-center">
+                      <input type="radio" name="filter-cat" value={cat} checked={idx === 0} class="peer sr-only filter-input" />
+                      <div class="w-4 h-4 border border-zinc-600 rounded-full peer-checked:border-emerald-500 peer-checked:bg-emerald-500/20 transition-all" />
+                      <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full absolute opacity-0 peer-checked:opacity-100 transition-all scale-50 peer-checked:scale-100" />
+                    </div>
+                    <span class="group-hover:translate-x-0.5 transition-transform text-xs sm:text-sm font-medium">{cat}</span>
+                  </label>
+                ))}
+            </div>
+          </div>
+          <div>
+            <h3 class="text-white font-medium mb-3.5 text-xs uppercase tracking-wider text-zinc-300">Formato</h3>
+            <div class="space-y-2.5 text-zinc-400 text-sm">
+              <label class="flex items-center gap-3 cursor-pointer hover:text-white transition-colors group py-1">
+                <div class="relative flex items-center justify-center">
+                  <input type="radio" name="filter-tipo" value="Todos" checked class="peer sr-only filter-input" />
+                  <div class="w-4 h-4 border border-zinc-600 rounded-full peer-checked:border-emerald-500 peer-checked:bg-emerald-500/20 transition-all"></div>
+                  <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full absolute opacity-0 peer-checked:opacity-100 transition-all scale-50 peer-checked:scale-100"></div>
+                </div>
+                <span class="group-hover:translate-x-0.5 transition-transform text-xs sm:text-sm font-medium">Ambos</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer hover:text-white transition-colors group py-1">
+                <div class="relative flex items-center justify-center">
+                  <input type="radio" name="filter-tipo" value="Terminada" class="peer sr-only filter-input" />
+                  <div class="w-4 h-4 border border-zinc-600 rounded-full peer-checked:border-emerald-500 peer-checked:bg-emerald-500/20 transition-all"></div>
+                  <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full absolute opacity-0 peer-checked:opacity-100 transition-all scale-50 peer-checked:scale-100"></div>
+                </div>
+                <span class="group-hover:translate-x-0.5 transition-transform text-xs sm:text-sm font-medium">Figura Terminada</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer hover:text-white transition-colors group py-1">
+                <div class="relative flex items-center justify-center">
+                  <input type="radio" name="filter-tipo" value="DIY" class="peer sr-only filter-input" />
+                  <div class="w-4 h-4 border border-zinc-600 rounded-full peer-checked:border-emerald-500 peer-checked:bg-emerald-500/20 transition-all"></div>
+                  <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full absolute opacity-0 peer-checked:opacity-100 transition-all scale-50 peer-checked:scale-100"></div>
+                </div>
+                <span class="group-hover:translate-x-0.5 transition-transform text-xs sm:text-sm font-medium">Solo Kit DIY</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Área Principal -->
+    <div class="flex-1 w-full relative min-h-[500px]">
+      
+      <!-- ESTADO VACÍO ELEGANTE -->
+      <div id="empty-state" class="hidden w-full h-[450px] flex-col items-center justify-center text-center bg-[#0c0c0e]/50 border border-white/5 rounded-3xl p-8 shadow-inner">
+        <div class="w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center mb-5 border border-white/10 shadow-inner">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+        <h3 class="text-2xl font-serif text-white mb-2">No encontramos figuras</h3>
+        <p class="text-zinc-400 text-sm max-w-sm mb-7 leading-relaxed">No hay resultados que coincidan con tu búsqueda o filtros actuales. Intenta usar otros términos.</p>
+        <button id="empty-reset-btn" class="px-7 py-3 bg-white text-black rounded-full text-sm font-semibold hover:bg-zinc-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]">Restablecer Catálogo</button>
+      </div>
+
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-7 w-full transition-all duration-500">
+        <!-- Solo pasamos los productos válidos y comercializables -->
+        {productosValidos.map((prod, index) => <ProductCard prod={prod} index={index} />)}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- El bloque <script> interno de Catalog.astro permanece exactamente idéntico al original conservando al 100% la lógica de filtrado, GSAP y round-robin -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const productGrid = document.getElementById("product-grid");
+    const allCards = Array.from(document.querySelectorAll(".product-card"));
+    
+    // Controles UI
+    const filterInputs = document.querySelectorAll(".filter-input");
+    const sortSelect = document.getElementById("sort-select") as HTMLSelectElement;
+    const searchInput = document.getElementById("catalog-search") as HTMLInputElement;
+    const clearSearchBtn = document.getElementById("clear-search-btn");
+    const resetFiltersBtn = document.getElementById("reset-filters");
+    const emptyResetBtn = document.getElementById("empty-reset-btn");
+    
+    // Feedback UI
+    const emptyState = document.getElementById("empty-state");
+    const resultsCount = document.getElementById("results-count");
+
+    // Variables de Estado Centralizadas
+    let searchTerm = "";
+    let searchTimeout: ReturnType<typeof setTimeout>;
+    const limitInitialView = 20;
+
+    // --- ALGORITMO ROUND-ROBIN: Variedad en Vista Inicial ---
+    const catMap = new Map<string, Element[]>();
+    allCards.forEach((card) => {
+      const prodData = JSON.parse(card.getAttribute("data-producto") || "{}");
+      if (!catMap.has(prodData.categoria)) catMap.set(prodData.categoria, []);
+      catMap.get(prodData.categoria)!.push(card);
+    });
+
+    const initial20Cards = new Set<Element>();
+    let pickIndex = 0;
+    while (initial20Cards.size < limitInitialView && initial20Cards.size < allCards.length) {
+      let addedInThisPass = false;
+      for (const [cat, cards] of catMap.entries()) {
+        if (initial20Cards.size >= limitInitialView) break;
+        if (cards[pickIndex]) {
+          initial20Cards.add(cards[pickIndex]);
+          addedInThisPass = true;
+        }
+      }
+      if (!addedInThisPass) break; 
+      pickIndex++;
+    }
+
+    // --- ANIMACIONES ---
+    function animateCardsGSAP() {
+      if (typeof (window as any).gsap === "undefined") return;
+      const gsap = (window as any).gsap;
+      const ScrollTrigger = (window as any).ScrollTrigger;
+
+      const visibleCards = allCards.filter((card) => !card.classList.contains("hidden"));
+      if (visibleCards.length === 0) return;
+
+      ScrollTrigger.batch(visibleCards, {
+        start: "top 95%",
+        onEnter: (batch: any) =>
+          gsap.fromTo(batch, { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.04, duration: 0.5, ease: "power2.out", overwrite: true }),
+      });
+      ScrollTrigger.refresh();
+    }
+
+    // --- LÓGICA CENTRAL DE FILTRADO ---
+    function applyFilters() {
+      const activeCat = (document.querySelector('input[name="filter-cat"]:checked') as HTMLInputElement).value;
+      const activeType = (document.querySelector('input[name="filter-tipo"]:checked') as HTMLInputElement).value;
+      
+      const isDefaultState = (!searchTerm && activeCat === "Todos" && activeType === "Todos");
+
+      let visibleCount = 0;
+
+      allCards.forEach((card) => {
+        let show = true;
+        const prodData = JSON.parse(card.getAttribute("data-producto") || "{}");
+
+        if (isDefaultState) {
+          show = initial20Cards.has(card);
+        } else {
+          if (searchTerm) {
+            const searchString = `${prodData.nombre} ${prodData.categoria} ${prodData.descripcion || ''}`.toLowerCase();
+            if (!searchString.includes(searchTerm)) show = false;
+          }
+          if (activeCat !== "Todos" && prodData.categoria !== activeCat) show = false;
+        }
+
+        const priceElement = card.querySelector(".price-value");
+        const labelElement = card.querySelector(".price-label");
+        if (activeType === "DIY") {
+          if (priceElement) priceElement.textContent = `$${prodData.precioDIY.toLocaleString('es-CO')}`;
+          if (labelElement) labelElement.textContent = "Kit DIY";
+        } else {
+          if (priceElement) priceElement.textContent = `$${prodData.precioBase.toLocaleString('es-CO')}`;
+          if (labelElement) labelElement.textContent = "Terminada desde";
+        }
+
+        if (show) {
+          card.classList.remove("hidden");
+          card.classList.add("flex");
+          visibleCount++;
+        } else {
+          card.classList.add("hidden");
+          card.classList.remove("flex");
+        }
+      });
+
+      if (resultsCount) {
+        if (isDefaultState) {
+          resultsCount.textContent = `Mostrando ${visibleCount} figuras destacadas`;
+        } else {
+          resultsCount.textContent = visibleCount === 1 ? `1 figura encontrada` : `${visibleCount} figuras encontradas`;
+        }
+      }
+
+      if (visibleCount === 0) {
+        emptyState?.classList.remove("hidden");
+        emptyState?.classList.add("flex");
+        productGrid?.classList.add("hidden");
+      } else {
+        emptyState?.classList.add("hidden");
+        emptyState?.classList.remove("flex");
+        productGrid?.classList.remove("hidden");
+        animateCardsGSAP();
+      }
+      sortProducts();
+    }
+
+    // --- LÓGICA DE ORDENAMIENTO ---
+    function sortProducts() {
+      if (!productGrid) return;
+      const sortVal = sortSelect.value;
+      const cards = Array.from(productGrid.children) as HTMLElement[];
+
+      cards.sort((a, b) => {
+        const priceA = parseFloat(a.getAttribute("data-precio") || "0");
+        const priceB = parseFloat(b.getAttribute("data-precio") || "0");
+        const piecesA = parseInt(a.getAttribute("data-piezas") || "0");
+        const piecesB = parseInt(b.getAttribute("data-piezas") || "0");
+        const nameA = a.getAttribute("data-nombre") || "";
+        const nameB = b.getAttribute("data-nombre") || "";
+        const ogOrderA = parseInt(a.getAttribute("data-original-order") || "0");
+        const ogOrderB = parseInt(b.getAttribute("data-original-order") || "0");
+
+        switch (sortVal) {
+          case "precio-asc": return priceA - priceB;
+          case "precio-desc": return priceB - priceA;
+          case "piezas-desc": return piecesB - piecesA;
+          case "piezas-asc": return piecesA - piecesB;
+          case "nombre-asc": return nameA.localeCompare(nameB);
+          default: return ogOrderA - ogOrderB;
+        }
+      });
+      cards.forEach((card) => productGrid.appendChild(card));
+      if (typeof (window as any).ScrollTrigger !== "undefined") {
+        (window as any).ScrollTrigger.refresh();
+      }
+    }
+
+    // --- FUNCIÓN CENTRAL DE RESET ---
+    function resetAllFilters() {
+      if (searchInput) searchInput.value = "";
+      searchTerm = "";
+      if (clearSearchBtn) clearSearchBtn.classList.add("hidden");
+
+      const defaultCat = document.querySelector('input[name="filter-cat"][value="Todos"]') as HTMLInputElement;
+      if (defaultCat) defaultCat.checked = true;
+
+      const defaultType = document.querySelector('input[name="filter-tipo"][value="Todos"]') as HTMLInputElement;
+      if (defaultType) defaultType.checked = true;
+
+      if (sortSelect) sortSelect.value = "recomendados";
+      applyFilters();
+    }
+
+    // --- EVENT LISTENERS ---
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        const val = (e.target as HTMLInputElement).value;
+        if (clearSearchBtn) {
+          val.length > 0 ? clearSearchBtn.classList.remove("hidden") : clearSearchBtn.classList.add("hidden");
+        }
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          searchTerm = val.trim().toLowerCase();
+          applyFilters();
+        }, 150);
+      });
+    }
+
+    clearSearchBtn?.addEventListener("click", () => {
+      if (searchInput) {
+        searchInput.value = "";
+        searchInput.focus();
+      }
+      searchTerm = "";
+      clearSearchBtn.classList.add("hidden");
+      applyFilters();
+    });
+
+    resetFiltersBtn?.addEventListener("click", resetAllFilters);
+    emptyResetBtn?.addEventListener("click", resetAllFilters);
+    filterInputs.forEach((input) => input.addEventListener("change", applyFilters));
+    sortSelect?.addEventListener("change", sortProducts);
+
+    document.addEventListener("catalog:search", (e: Event) => {
+      const externalTerm = (e as CustomEvent).detail.term;
+      if (searchInput) {
+        searchInput.value = externalTerm;
+        if (clearSearchBtn) clearSearchBtn.classList.remove("hidden");
+      }
+      searchTerm = externalTerm.trim().toLowerCase();
+      applyFilters();
+      
+      const catalogoEl = document.getElementById("catalogo");
+      if (catalogoEl) catalogoEl.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    allCards.forEach((card) => {
+      card.addEventListener("click", () => {
+        const prodData = JSON.parse(card.getAttribute("data-producto") || "{}");
+        document.dispatchEvent(new CustomEvent("modal:open", { detail: prodData }));
+      });
+    });
+
+    applyFilters();
+  });
+</script>

@@ -1,198 +1,39 @@
 ---
+// src/pages/index.astro
 import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import Showcase from '../components/Showcase.astro';
+import Catalog from '../components/Catalog.astro'; 
+import Process from '../components/sections/Process.astro';
+import KitsSection from '../components/sections/KitsSection.astro';
+import ProductModal from '../components/ProductModal.astro';
+import { getProductos } from '../sanity/products';
 
-// Simulador de Base de Datos de Productos
-const productos = [
-  { id: 1, nombre: 'Loro Tropical', precio: 45.00, piezas: 439, categoria: 'Animales', img: 'https://images.unsplash.com/photo-1601058268499-e52658b8bb88?q=80&w=600&auto=format&fit=crop' },
-  { id: 2, nombre: 'Dragón Imperial', precio: 85.00, piezas: 1250, categoria: 'Personajes', img: 'https://images.unsplash.com/photo-1510102553945-8ceee4b6f103?q=80&w=600&auto=format&fit=crop' },
-  { id: 3, nombre: 'Cisne Elegante', precio: 30.00, piezas: 320, categoria: 'Animales', img: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=600&auto=format&fit=crop' },
-  { id: 4, nombre: 'Kit DIY: Zorro Geométrico', precio: 25.00, piezas: 200, categoria: 'Kits DIY', img: 'https://images.unsplash.com/photo-1503327431567-311681577f80?q=80&w=600&auto=format&fit=crop' },
-];
+// Obtenemos los productos una sola vez de forma centralizada
+const productos = await getProductos();
+
+// El producto destacado para Showcase y Proceso es el primero en prioridad
+const productoDestacado = productos[0];
 ---
 
-<Layout title="LIPUD | Origami 3D Art">
+<Layout title="Origami3D Art | Figuras de Origami 3D">
 	
-	<!-- 1. HEADER (Barra de Navegación) -->
-	<header class="fixed w-full top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-		<div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-			<!-- Logo -->
-			<div class="flex items-center gap-2">
-				<div class="w-8 h-8 bg-emerald-500 rounded-bl-xl rounded-tr-xl rotate-45 flex items-center justify-center">
-					<div class="w-4 h-4 bg-white rounded-bl-md rounded-tr-md"></div>
-				</div>
-				<span class="text-xl font-bold tracking-tight text-slate-900 ml-2">LIPUD <span class="text-emerald-600 font-light">3D Art</span></span>
-			</div>
-			
-			<!-- Enlaces (Desktop) -->
-			<nav class="hidden md:flex gap-8 text-sm font-medium text-slate-600">
-				<a href="#" class="hover:text-emerald-600 transition-colors">Todos los Modelos</a>
-				<a href="#" class="hover:text-emerald-600 transition-colors">Animales</a>
-				<a href="#" class="hover:text-emerald-600 transition-colors">Personajes</a>
-				<a href="#" class="hover:text-emerald-600 transition-colors">Kits DIY</a>
-			</nav>
+	<!-- 1. HERO -->
+	<Hero productos={productos} />
 
-			<!-- Iconos -->
-			<div class="flex items-center gap-4 text-slate-600">
-				<button class="hover:text-emerald-600 transition-colors">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-				</button>
-				<button class="hover:text-emerald-600 transition-colors relative">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-					<span class="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">2</span>
-				</button>
-			</div>
-		</div>
-	</header>
+	<!-- 2. PRODUCTO DESTACADO (SHOWCASE) -->
+	{productoDestacado && <Showcase producto={productoDestacado} />}
 
-	<!-- 2. HERO SECTION -->
-	<section class="pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col items-center text-center animate-on-scroll">
-		<span class="px-4 py-1.5 bg-emerald-50 text-emerald-600 rounded-full text-sm font-semibold mb-6 border border-emerald-200">
-			Hecho a mano en papel
-		</span>
-		<h1 class="text-5xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-			Arte en Papel: Figuras <br/> <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">Origami 3D Únicas</span>
-		</h1>
-		<p class="text-lg md:text-xl text-slate-600 max-w-2xl mb-10">
-			Esculturas hechas a mano con miles de piezas que encajan a la perfección. Compra la figura terminada o pide un kit DIY para armarlo en casa.
-		</p>
-		<a href="#catalogo" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-emerald-200 hover:shadow-xl hover:-translate-y-1">
-			Ver Catálogo
-		</a>
-	</section>
+	<!-- 3. CATÁLOGO COMPLETO -->
+	<Catalog productos={productos} />
 
-	<!-- 3. CATÁLOGO DE PRODUCTOS (Grid) -->
-	<section id="catalogo" class="py-20 bg-white px-6">
-		<div class="max-w-7xl mx-auto">
-			<!-- Filtros Superiores -->
-			<div class="flex flex-col md:flex-row justify-between items-center mb-12 animate-on-scroll">
-				<h2 class="text-3xl font-bold text-slate-900 mb-4 md:mb-0">Nuestras Creaciones</h2>
-				<div class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-					<button class="px-5 py-2 bg-slate-900 text-white rounded-full text-sm font-medium whitespace-nowrap">Todos</button>
-					<button class="px-5 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full text-sm font-medium whitespace-nowrap transition-colors">Animales</button>
-					<button class="px-5 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full text-sm font-medium whitespace-nowrap transition-colors">Geométricos</button>
-					<button class="px-5 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full text-sm font-medium whitespace-nowrap transition-colors">Anime</button>
-				</div>
-			</div>
+	<!-- 4. SECCIÓN PROCESO ARTESANAL -->
+	{productoDestacado && <Process producto={productoDestacado} />}
 
-			<!-- Grid de Productos -->
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-				{productos.map((producto) => (
-					<div class="group bg-slate-50 rounded-3xl p-4 transition-all hover:shadow-2xl hover:shadow-slate-200 hover:-translate-y-2 cursor-pointer animate-on-scroll">
-						<div class="relative h-64 w-full rounded-2xl overflow-hidden mb-4 bg-slate-200">
-							<img src={producto.img} alt={producto.nombre} class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
-							<!-- Etiqueta de piezas -->
-							<div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-slate-700 shadow-sm">
-								🧩 {producto.piezas} Piezas
-							</div>
-						</div>
-						<div class="px-2">
-							<p class="text-xs font-semibold text-emerald-600 mb-1 uppercase tracking-wider">{producto.categoria}</p>
-							<h3 class="text-lg font-bold text-slate-900 mb-2">{producto.nombre}</h3>
-							<div class="flex justify-between items-center">
-								<span class="text-xl font-black text-slate-900">${producto.precio.toFixed(2)}</span>
-								<button class="w-10 h-10 rounded-full bg-slate-200 text-slate-900 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-								</button>
-							</div>
-						</div>
-					</div>
-				))}
-			</div>
-		</div>
-	</section>
+	<!-- 5. KITS DIY -->
+	<KitsSection productos={productos} />
 
-	<!-- 4. VISTA DE DETALLE DE PRODUCTO (Simulada) -->
-	<section class="py-24 px-6 bg-slate-50">
-		<div class="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-xl overflow-hidden flex flex-col md:flex-row animate-on-scroll">
-			
-			<!-- Columna Izquierda: Galería / Visor 3D (Placeholder) -->
-			<div class="md:w-1/2 p-4">
-				<div class="w-full h-[400px] md:h-[600px] bg-slate-100 rounded-[2rem] overflow-hidden relative group flex items-center justify-center">
-					<img src="https://images.unsplash.com/photo-1601058268499-e52658b8bb88?q=80&w=800&auto=format&fit=crop" alt="Loro Tropical" class="object-cover w-full h-full" />
-					
-					<!-- Botón flotante para futuro visualizador Three.js -->
-					<div class="absolute bottom-6 flex gap-2">
-						<button class="bg-white/90 backdrop-blur shadow-lg px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-emerald-50 transition-colors">
-							🖼️ Fotos
-						</button>
-						<button class="bg-slate-900/90 text-white backdrop-blur shadow-lg px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-slate-800 transition-colors">
-							🔄 Ver en 3D (Próximamente)
-						</button>
-					</div>
-				</div>
-				<!-- Miniaturas -->
-				<div class="flex gap-4 mt-4 px-2">
-					<div class="w-20 h-20 rounded-xl overflow-hidden cursor-pointer border-2 border-emerald-500"><img src="https://images.unsplash.com/photo-1601058268499-e52658b8bb88?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover"/></div>
-					<div class="w-20 h-20 rounded-xl overflow-hidden cursor-pointer opacity-60 hover:opacity-100 bg-slate-200"></div>
-					<div class="w-20 h-20 rounded-xl overflow-hidden cursor-pointer opacity-60 hover:opacity-100 bg-slate-200"></div>
-				</div>
-			</div>
-
-			<!-- Columna Derecha: Información y Compra -->
-			<div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-				<div class="mb-2 text-emerald-600 font-semibold tracking-wider text-sm">COLECCIÓN ANIMALES</div>
-				<h2 class="text-4xl font-bold text-slate-900 mb-4">Loro Tropical en Origami 3D</h2>
-				<p class="text-3xl font-light text-slate-500 mb-6">$45.00 <span class="text-base text-slate-400 font-normal ml-2">+ Envío calculado en checkout</span></p>
-
-				<p class="text-slate-600 mb-8 leading-relaxed">
-					Una pieza de arte vibrante y llena de vida. Cada pieza ha sido doblada a mano y ensamblada meticulosamente para crear esta escultura de escritorio perfecta para amantes de la naturaleza.
-				</p>
-
-				<!-- Opciones de Compra -->
-				<div class="mb-8">
-					<p class="font-semibold text-slate-900 mb-3">Elige un formato:</p>
-					<div class="flex flex-col gap-3">
-						<label class="flex items-center p-4 border-2 border-emerald-500 bg-emerald-50 rounded-xl cursor-pointer">
-							<input type="radio" name="formato" checked class="accent-emerald-600 w-5 h-5 mr-4">
-							<div>
-								<span class="block font-bold text-slate-900">Comprar Figura Terminada</span>
-								<span class="text-sm text-slate-600">Lista para decorar tu hogar.</span>
-							</div>
-						</label>
-						<label class="flex items-center p-4 border-2 border-slate-200 hover:border-slate-300 rounded-xl cursor-pointer transition-colors">
-							<input type="radio" name="formato" class="accent-emerald-600 w-5 h-5 mr-4">
-							<div>
-								<span class="block font-bold text-slate-900">Kit para armar (DIY) <span class="text-emerald-600 text-sm ml-2">- $25.00</span></span>
-								<span class="text-sm text-slate-600">Incluye 439 fichas plegadas y manual PDF.</span>
-							</div>
-						</label>
-					</div>
-				</div>
-
-				<!-- Botón Añadir -->
-				<button class="w-full bg-slate-900 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all transform hover:-translate-y-1 mb-8 flex items-center justify-center gap-2">
-					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-					Añadir al Carrito
-				</button>
-
-				<!-- Especificaciones -->
-				<div class="border-t border-slate-200 pt-8">
-					<h3 class="font-bold text-slate-900 mb-4 flex items-center gap-2">
-						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-						Especificaciones Técnicas
-					</h3>
-					<ul class="text-sm text-slate-600 space-y-2">
-						<li class="flex justify-between border-b border-slate-100 pb-2"><span>Total de piezas:</span> <span class="font-bold text-slate-900">439</span></li>
-						<li class="flex justify-between border-b border-slate-100 pb-2"><span>Dificultad de armado (Kit):</span> <span class="font-bold text-slate-900">Media ⭐⭐⭐</span></li>
-						<li class="flex flex-col pt-2">
-							<span class="mb-2">Desglose por color:</span>
-							<div class="flex gap-2 flex-wrap">
-								<span class="px-2 py-1 bg-green-100 text-green-700 rounded-md text-xs font-semibold">Verde Claro (137)</span>
-								<span class="px-2 py-1 bg-green-800 text-white rounded-md text-xs font-semibold">Verde Oscuro (133)</span>
-								<span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-md text-xs font-semibold">Amarillo (98)</span>
-								<span class="px-2 py-1 bg-slate-100 text-slate-700 rounded-md text-xs font-semibold">Blanco (62)</span>
-							</div>
-						</li>
-					</ul>
-				</div>
-
-			</div>
-		</div>
-	</section>
-
-	<!-- Footer simple -->
-	<footer class="bg-slate-900 text-slate-400 py-12 text-center text-sm">
-		<p>&copy; 2024 LIPUD 3D Art. Todos los derechos reservados.</p>
-	</footer>
+	<!-- 6. MODAL DE PRODUCTO -->
+	<ProductModal />
 
 </Layout>

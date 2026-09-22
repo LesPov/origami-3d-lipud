@@ -1,0 +1,94 @@
+---
+// src/components/ProductCard.astro
+import type { Producto } from '../types/producto';
+
+interface Props {
+  prod: Producto;
+  index: number;
+}
+
+const { prod, index } = Astro.props;
+const hasMultipleImages = Array.isArray(prod.imagenes) && prod.imagenes.length > 1;
+const primaryImage = prod.imagenes?.[0] || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80';
+const secondaryImage = hasMultipleImages ? prod.imagenes[1] : null;
+const hexColor = prod.colores?.[0]?.hex || '#10b981';
+---
+
+<div class="product-card group bg-[#0a0a0a] border border-white/10 hover:border-emerald-500/40 rounded-3xl overflow-hidden cursor-pointer hover:-translate-y-1.5 transition-all duration-500 flex flex-col relative shadow-[0_10px_30px_-10px_rgba(0,0,0,0.7)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.9)]"
+	 style={`--glow-color: ${hexColor}15; --glow-hover: ${hexColor}30;`}
+	 data-producto={JSON.stringify(prod)}
+	 data-nombre={prod.nombre.toLowerCase()}
+	 data-cat={prod.categoria}
+	 data-dif={prod.dificultad}
+	 data-precio={prod.precioBase}
+	 data-piezas={prod.figuras3D}
+	 data-original-order={index}>
+	
+	<!-- Resplandor dinámico condicionado al color de la figura -->
+	<div class="absolute inset-0 bg-gradient-to-t from-[var(--glow-hover)] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0"></div>
+
+	<!-- Contenedor Visual con soporte multivista optimizado -->
+	<div class="relative w-full aspect-[4/5] bg-zinc-950 overflow-hidden z-10 border-b border-white/5">
+		<!-- Imagen Principal -->
+		<img 
+			src={primaryImage} 
+			alt={prod.nombre} 
+			class={`w-full h-full object-cover transition-transform duration-700 ease-out shadow-lg ${hasMultipleImages ? 'group-hover:scale-105' : 'group-hover:scale-108'}`} 
+			loading="lazy" 
+		/>
+
+		<!-- Segunda Imagen (Crossfade en hover) -->
+		{hasMultipleImages && secondaryImage && (
+			<img 
+				src={secondaryImage} 
+				alt={`${prod.nombre} - Vista alterna`} 
+				class="hidden [@media(hover:hover)]:block absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 pointer-events-none shadow-lg" 
+				loading="lazy" 
+			/>
+		)}
+
+		<!-- Badge de Módulos (Top Left) -->
+		<div class="absolute top-4 left-4 bg-black/65 backdrop-blur-md px-3 py-1 rounded-full text-[10.5px] font-medium text-zinc-200 border border-white/10 flex items-center gap-1.5 shadow-md pointer-events-none">
+			<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+			{prod.figuras3D} piezas
+		</div>
+
+		<!-- Indicador de Galería Multivista (Top Right) -->
+		{hasMultipleImages && (
+			<div class="absolute top-4 right-4 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-full text-[10.5px] text-zinc-300 border border-white/10 flex items-center gap-1.5 shadow-md pointer-events-none transition-all duration-300 group-hover:border-emerald-500/40 group-hover:text-emerald-300">
+				<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+					<circle cx="9" cy="2" r="2"/>
+					<path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+				</svg>
+				<span class="font-medium tracking-wider">{prod.imagenes.length}</span>
+			</div>
+		)}
+	</div>
+	
+	<!-- Información y Footer de Tarjeta -->
+	<div class="p-6 flex-1 flex flex-col justify-between z-10 bg-[#0a0a0a]/90 backdrop-blur-sm">
+		<div>
+			<div class="flex justify-between items-center mb-2.5">
+				<p class="text-[10px] text-emerald-400/90 uppercase tracking-widest font-semibold">{prod.categoria}</p>
+				<!-- Círculos de color dinámicos -->
+				<div class="flex -space-x-1.5">
+					{prod.colores.slice(0,3).map(color => (
+						<div class="w-3.5 h-3.5 rounded-full border-2 border-[#0a0a0a] shadow-xs" style={`background-color: ${color.hex}`}></div>
+					))}
+					{prod.colores.length > 3 && <div class="w-3.5 h-3.5 rounded-full border-2 border-[#0a0a0a] bg-zinc-800 flex items-center justify-center text-[7px] text-zinc-300 font-medium">+{prod.colores.length - 3}</div>}
+				</div>
+			</div>
+			<h3 class="text-xl text-white font-serif mb-4 group-hover:text-white transition-colors leading-snug line-clamp-2">{prod.nombre}</h3>
+		</div>
+		<div class="flex justify-between items-end border-t border-white/5 pt-4 mt-2">
+			<div>
+				<p class="text-[10px] text-zinc-400 mb-0.5 uppercase tracking-wider price-label">Desde</p>
+				<span class="text-2xl font-serif text-white price-value">${prod.precioDIY.toLocaleString('es-CO')}</span>
+			</div>
+			<div class="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-300 group-hover:bg-white group-hover:text-black group-hover:rotate-45 transition-all duration-300 shadow-md" aria-hidden="true">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+			</div>
+		</div>
+	</div>
+</div>

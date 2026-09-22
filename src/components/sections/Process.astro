@@ -1,0 +1,307 @@
+---
+// src/components/sections/Process.astro
+interface Props {
+  producto: any;
+}
+const { producto } = Astro.props;
+---
+
+<section
+  id="proceso"
+  class="snap-start py-24 md:py-32 relative z-10 bg-[#050505]"
+>
+  <!-- Decoración de fondo -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute top-0 right-1/4 w-96 h-96 bg-emerald-900/10 rounded-full blur-[120px]"
+    >
+    </div>
+    <div
+      class="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-900/10 rounded-full blur-[120px]"
+    >
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <div
+      class="text-center max-w-2xl mx-auto mb-16 md:mb-24 gsap-process-header gsap-fade-up"
+    >
+      <span
+        class="text-emerald-500 font-medium tracking-widest text-xs uppercase mb-4 block"
+        >El Arte del Plegado</span
+      >
+      <h2 class="text-4xl md:text-5xl font-serif text-white mb-6">
+        De una hoja a una escultura
+      </h2>
+      <p class="text-zinc-400 text-lg">
+        Un proceso meticuloso que transforma papel simple en obras de arte 3D
+        duraderas.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 relative">
+      <!-- Columna Izquierda: Imagen / Representación Sticky -->
+      <div class="lg:col-span-5 hidden lg:block relative">
+        <div
+          class="sticky top-32 w-full aspect-[4/5] rounded-[2.5rem] border border-zinc-800/60 bg-[#0a0a0a]/80 backdrop-blur-xl overflow-hidden shadow-2xl flex items-center justify-center group process-sticky-img"
+        >
+          <!-- Resplandor animado -->
+          <div
+            class="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent opacity-50"
+          >
+          </div>
+          <!-- Partículas 3D-Like (CSS/JS) -->
+          <div
+            class="absolute inset-0 w-full h-full pointer-events-none z-0"
+            id="particles-container"
+          >
+          </div>
+
+          <img
+            src={producto.imagenes[0]}
+            class="w-3/4 h-3/4 object-contain filter drop-shadow-[0_0_30px_rgba(16,185,129,0.15)] relative z-10"
+            alt="Escultura Origami Final"
+          />
+
+          <div
+            class="absolute bottom-6 left-6 right-6 bg-black/50 backdrop-blur-lg border border-zinc-700/50 p-4 rounded-2xl flex justify-between items-center z-20"
+          >
+            <div>
+              <p class="text-white font-medium text-sm">{producto.nombre}</p>
+              <p class="text-zinc-400 text-xs mt-0.5">
+                {producto.figuras3D} módulos triangulares
+              </p>
+            </div>
+            <div
+              class="w-10 h-10 rounded-full border border-emerald-500/30 flex items-center justify-center text-emerald-400 bg-emerald-900/20"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline
+                  points="2 17 12 22 22 17"></polyline><polyline
+                  points="2 12 12 17 22 12"></polyline></svg
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Los 4 pasos -->
+      <div class="lg:col-span-7 flex flex-col gap-8 relative">
+        <!-- Líneas conectoras verticales -->
+        <div
+          class="absolute left-[1.8rem] md:left-[2.25rem] top-10 bottom-10 w-[1px] bg-zinc-800/80 z-0 hidden sm:block"
+        >
+        </div>
+        <div
+          class="absolute left-[1.8rem] md:left-[2.25rem] top-10 bottom-10 w-[2px] bg-gradient-to-b from-emerald-500 via-emerald-400 to-transparent z-0 hidden sm:block origin-top scale-y-0 gsap-process-line shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+        >
+        </div>
+
+        <!-- Step 1 -->
+        <div
+          class="process-step relative z-10 flex flex-col sm:flex-row gap-6 md:gap-8 items-start group"
+        >
+          <div
+            class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[#0a0a0a] border border-zinc-800 shadow-xl flex items-center justify-center font-serif text-xl md:text-2xl text-zinc-500 transition-all duration-500 relative bg-zinc-900/80 backdrop-blur-sm z-10 step-number"
+          >
+            01
+          </div>
+          <div
+            class="flex-1 bg-[#0a0a0a]/60 backdrop-blur-md border border-zinc-800/60 p-6 md:p-8 rounded-3xl transition-all duration-500 shadow-lg hover:bg-zinc-900/80 hover:border-zinc-700 hover:-translate-y-1"
+          >
+            <h3 class="text-xl md:text-2xl font-serif text-white mb-3">
+              Doblar
+            </h3>
+            <p class="text-zinc-400 leading-relaxed text-sm md:text-base">
+              Cada módulo es doblado manualmente a partir de pequeños
+              rectángulos de papel, creando piezas triangulares precisas y
+              consistentes con bolsillos y puntas.
+            </p>
+          </div>
+        </div>
+        <!-- Step 2 -->
+        <div
+          class="process-step relative z-10 flex flex-col sm:flex-row gap-6 md:gap-8 items-start group"
+        >
+          <div
+            class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[#0a0a0a] border border-zinc-800 shadow-xl flex items-center justify-center font-serif text-xl md:text-2xl text-zinc-500 transition-all duration-500 relative bg-zinc-900/80 backdrop-blur-sm z-10 step-number"
+          >
+            02
+          </div>
+          <div
+            class="flex-1 bg-[#0a0a0a]/60 backdrop-blur-md border border-zinc-800/60 p-6 md:p-8 rounded-3xl transition-all duration-500 shadow-lg hover:bg-zinc-900/80 hover:border-zinc-700 hover:-translate-y-1"
+          >
+            <h3 class="text-xl md:text-2xl font-serif text-white mb-3">
+              Preparar
+            </h3>
+            <p class="text-zinc-400 leading-relaxed text-sm md:text-base">
+              Las piezas se organizan y clasifican rigurosamente por colores
+              según el patrón de la figura, asegurando la cantidad exacta
+              necesaria para el ensamble.
+            </p>
+          </div>
+        </div>
+        <!-- Step 3 -->
+        <div
+          class="process-step relative z-10 flex flex-col sm:flex-row gap-6 md:gap-8 items-start group"
+        >
+          <div
+            class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[#0a0a0a] border border-zinc-800 shadow-xl flex items-center justify-center font-serif text-xl md:text-2xl text-zinc-500 transition-all duration-500 relative bg-zinc-900/80 backdrop-blur-sm z-10 step-number"
+          >
+            03
+          </div>
+          <div
+            class="flex-1 bg-[#0a0a0a]/60 backdrop-blur-md border border-zinc-800/60 p-6 md:p-8 rounded-3xl transition-all duration-500 shadow-lg hover:bg-zinc-900/80 hover:border-zinc-700 hover:-translate-y-1"
+          >
+            <h3 class="text-xl md:text-2xl font-serif text-white mb-3">
+              Ensamblar
+            </h3>
+            <p class="text-zinc-400 leading-relaxed text-sm md:text-base">
+              Insertando las puntas de un módulo en los bolsillos de otro, cada
+              pieza se conecta capa por capa sin necesidad de pegamento, usando
+              solo la fricción del papel.
+            </p>
+          </div>
+        </div>
+        <!-- Step 4 -->
+        <div
+          class="process-step relative z-10 flex flex-col sm:flex-row gap-6 md:gap-8 items-start group"
+        >
+          <div
+            class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[#0a0a0a] border border-zinc-800 shadow-xl flex items-center justify-center font-serif text-xl md:text-2xl text-zinc-500 transition-all duration-500 relative bg-zinc-900/80 backdrop-blur-sm z-10 step-number"
+          >
+            04
+          </div>
+          <div
+            class="flex-1 bg-gradient-to-br from-[#0a0a0a] to-zinc-900 backdrop-blur-md border border-emerald-900/30 p-6 md:p-8 rounded-3xl transition-all duration-500 shadow-lg shadow-emerald-900/5 hover:border-emerald-500/40 hover:-translate-y-1 overflow-hidden relative"
+          >
+            <div
+              class="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 blur-[60px] pointer-events-none"
+            >
+            </div>
+            <h3
+              class="text-xl md:text-2xl font-serif text-white mb-3 relative z-10"
+            >
+              Crear
+            </h3>
+            <p
+              class="text-zinc-400 leading-relaxed text-sm md:text-base relative z-10"
+            >
+              Cientos de piezas forman finalmente una escultura sólida, colorida
+              y única. Una obra de arte tridimensional lista para decorar
+              cualquier espacio.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Asegurar que GSAP esté disponible
+    if (typeof (window as any).gsap === "undefined") return;
+    const gsap = (window as any).gsap;
+    const ScrollTrigger = (window as any).ScrollTrigger;
+
+    // 1. Linea vertical interactiva
+    if (document.querySelector(".gsap-process-line")) {
+      gsap.to(".gsap-process-line", {
+        scaleY: 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".process-step",
+          start: "top 50%",
+          end: "bottom 50%",
+          endTrigger: ".gsap-process-line",
+          scrub: true,
+        },
+      });
+    }
+
+    // 2. Aparición de tarjetas (Stagger)
+    gsap.fromTo(
+      ".process-step",
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: "#proceso",
+          start: "top 60%",
+          toggleActions: "play none none reverse",
+        },
+      },
+    );
+
+    // 3. Activación dinámica del color del paso
+    gsap.utils.toArray(".process-step").forEach((step: any) => {
+      ScrollTrigger.create({
+        trigger: step,
+        start: "top 55%",
+        end: "bottom 45%",
+        toggleClass: {
+          targets: step.querySelector(".step-number"),
+          className: "active-step",
+        },
+      });
+    });
+
+    // 4. Parallax Image
+    gsap.to(".process-sticky-img img", {
+      rotation: 5,
+      y: -20,
+      scrollTrigger: {
+        trigger: "#proceso",
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 1,
+      },
+    });
+
+    // 5. Motor de Partículas Origami 3D encapsulado
+    const particlesContainer = document.getElementById("particles-container");
+    if (particlesContainer) {
+      for (let i = 0; i < 15; i++) {
+        const particle = document.createElement("div");
+        particle.className = "absolute border-[1px] border-emerald-500/20";
+
+        // CSS puro para formar un triángulo (módulo base)
+        particle.style.width = "0";
+        particle.style.height = "0";
+        particle.style.borderLeft = `${Math.random() * 8 + 4}px solid transparent`;
+        particle.style.borderRight = `${Math.random() * 8 + 4}px solid transparent`;
+        particle.style.borderBottom = `${Math.random() * 12 + 6}px solid rgba(16, 185, 129, ${Math.random() * 0.4})`;
+        particle.style.backgroundColor = "transparent";
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particlesContainer.appendChild(particle);
+
+        // Animación infinita suave
+        gsap.to(particle, {
+          y: `-=${Math.random() * 100 + 50}`,
+          x: `+=${Math.random() * 40 - 20}`,
+          rotation: Math.random() * 360,
+          opacity: 0,
+          duration: Math.random() * 5 + 3,
+          repeat: -1,
+          ease: "none",
+          delay: Math.random() * 2,
+        });
+      }
+    }
+  });
+</script>

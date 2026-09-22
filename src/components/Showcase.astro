@@ -1,0 +1,214 @@
+---
+// src/components/Showcase.astro
+import type { Producto } from "../types/producto";
+interface Props {
+  producto: Producto;
+}
+const { producto } = Astro.props;
+
+const coloresEstructurados = (producto.colores || []).map((c) => {
+  const porcentaje = producto.figuras3D > 0 ? (c.cantidad / producto.figuras3D) * 100 : 0;
+  return { ...c, porcentaje };
+});
+
+const hasMultipleImages = Array.isArray(producto.imagenes) && producto.imagenes.length > 1;
+const mainImage = producto.imagenes?.[0] || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80';
+const primaryColor = producto.colores?.[0]?.hex || '#10b981';
+---
+
+<section id="showcase" class="py-32 px-6 max-w-7xl mx-auto border-t border-zinc-800/30 showcase-section relative">
+  <div class="mb-12 md:mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6 gsap-stagger-element">
+    <div>
+      <div class="flex items-center gap-3 mb-4">
+        <span class="w-8 h-[1px] bg-emerald-500 block"></span>
+        <p class="text-xs text-emerald-400 uppercase tracking-widest font-medium">Obra Destacada</p>
+      </div>
+      <h2 class="text-4xl sm:text-5xl md:text-6xl font-serif text-white leading-[1.1]">
+        La anatomía de<br /><span class="text-zinc-400 italic">{producto.nombre}</span>
+      </h2>
+    </div>
+    <p class="text-zinc-400 max-w-sm text-sm leading-relaxed border-l border-emerald-500/30 pl-6 py-1">
+      Construida módulo por módulo con absoluta precisión. Una pieza de exhibición que representa horas de dedicación y miles de pliegues a mano.
+    </p>
+  </div>
+
+  <div class="bg-[#0a0a0a]/80 backdrop-blur-2xl border border-zinc-800/60 w-full rounded-[2.5rem] p-6 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 shadow-2xl shadow-black/50 relative overflow-hidden gsap-fade-up items-stretch">
+    <!-- Luz difuminada con el color base de la figura -->
+    <div class="absolute top-0 right-0 w-[600px] h-[600px] rounded-full blur-[140px] pointer-events-none opacity-[0.15]" style={`background-color: ${primaryColor};`}></div>
+
+    <!-- Galería Visual -->
+    <div class="lg:col-span-4 flex flex-col gap-6 relative z-10 h-full">
+      <div class="w-full aspect-[4/3] lg:aspect-auto lg:flex-1 bg-zinc-900 rounded-[2rem] overflow-hidden relative border border-zinc-800 showcase-img-container shadow-inner flex items-center justify-center">
+        <img 
+          id="showcase-main-img" 
+          src={mainImage} 
+          class="gsap-parallax-img w-full h-full object-cover transition-opacity duration-300" 
+          alt={producto.nombre} 
+        />
+        <div class="absolute top-6 left-6 bg-black/50 backdrop-blur-xl px-4 py-2 rounded-2xl text-xs text-white border border-white/10 flex items-center gap-2 shadow-2xl pointer-events-none">
+          <span class="w-2 h-2 rounded-full animate-pulse" style={`background-color: ${primaryColor};`}></span>
+          Edición Artesanal
+        </div>
+      </div>
+      
+      <!-- Fila de Miniaturas (Solo si hay más de 1 imagen) -->
+      {hasMultipleImages && (
+        <div id="showcase-thumbs-container" class="flex gap-4 gsap-stagger-element overflow-x-auto no-scrollbar pb-1">
+          {producto.imagenes.map((img, idx) => (
+            <button 
+              type="button"
+              data-img-src={img}
+              data-img-index={idx}
+              class={`showcase-thumb flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 transition-all cursor-pointer shadow-md ${idx === 0 ? "border-emerald-500 opacity-100" : "border-transparent opacity-50 hover:opacity-100 hover:border-zinc-600"}`}
+              aria-label={`Ver vista ${idx + 1} de ${producto.nombre}`}
+            >
+              <img src={img} class="w-full h-full object-cover pointer-events-none" alt={`${producto.nombre} vista ${idx + 1}`} loading="lazy" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <!-- Información y Especificaciones Técnicas -->
+    <div class="lg:col-span-8 flex flex-col justify-center relative z-10 showcase-info h-full">
+      <div class="flex justify-between items-start mb-4 gsap-stagger-element">
+        <div>
+          <h3 class="text-3xl sm:text-4xl lg:text-5xl font-serif text-white mb-2">{producto.nombre}</h3>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[10px] sm:text-xs text-zinc-400 uppercase tracking-widest bg-zinc-900/80 px-2.5 py-1 rounded-md border border-zinc-800">{producto.categoria}</span>
+          </div>
+        </div>
+        <p id="showcase-display-price" class="text-3xl sm:text-4xl font-serif text-white bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-400">
+          ${(producto.precioBase || 0).toLocaleString('es-CO')}
+        </p>
+      </div>
+
+      <p class="text-zinc-400 text-sm sm:text-base leading-relaxed mb-8 gsap-stagger-element font-light">
+        {producto.descripcion}
+      </p>
+
+      <!-- Ficha Técnica Visual -->
+      <div class="grid grid-cols-3 gap-3 sm:gap-5 mb-8 gsap-stagger-element">
+        <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4 sm:p-5 shadow-inner flex flex-col justify-center">
+          <span class="block text-[10px] sm:text-xs text-zinc-500 uppercase tracking-widest mb-1.5 font-medium">Volumen</span>
+          <span class="text-white font-serif text-xl sm:text-2xl">{producto.figuras3D} <span class="text-xs text-zinc-400 font-sans tracking-normal">módulos</span></span>
+        </div>
+        <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4 sm:p-5 shadow-inner flex flex-col justify-center">
+          <span class="block text-[10px] sm:text-xs text-zinc-500 uppercase tracking-widest mb-1.5 font-medium">Ensamblaje</span>
+          <span class="text-white font-serif text-xl sm:text-2xl">{producto.tiempo}</span>
+        </div>
+        <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4 sm:p-5 shadow-inner flex flex-col justify-center">
+          <span class="block text-[10px] sm:text-xs text-zinc-500 uppercase tracking-widest mb-1.5 font-medium">Nivel</span>
+          <span class="text-emerald-400 font-serif text-xl sm:text-2xl">{producto.dificultad}</span>
+        </div>
+      </div>
+
+      <!-- Paleta de Colores de los Módulos -->
+      <div class="mb-10 gsap-stagger-element">
+        <span class="block text-xs sm:text-sm text-zinc-400 font-medium mb-3 tracking-wide">Módulos de papel requeridos por color:</span>
+        <div class="flex flex-wrap gap-3">
+          {coloresEstructurados.map((color) => (
+            <div class="flex items-center gap-2.5 bg-[#121212] border border-zinc-800/80 pl-2 pr-3.5 py-1.5 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+              <span class="w-4 h-4 rounded-full shadow-inner border border-white/20" style={`background-color: ${color.hex};`}></span>
+              <span class="text-xs text-zinc-300 font-medium">{color.nombre} <span class="text-zinc-500 ml-1.5">{color.cantidad}x</span></span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Controles de Compra -->
+      <div class="flex flex-col gap-3 mb-8 gsap-stagger-element mt-auto">
+        <label class="relative flex items-center p-4 sm:p-5 border border-zinc-700 bg-zinc-900/40 rounded-2xl cursor-pointer hover:border-emerald-500/50 transition-all duration-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-zinc-800/80 has-[:checked]:shadow-[0_0_20px_rgba(16,185,129,0.1)] group">
+          <input type="radio" name="showcase-variant" value="Terminada" data-price={producto.precioBase} checked class="peer sr-only" />
+          <div class="flex-1 flex justify-between items-center text-sm text-zinc-400 peer-checked:text-white">
+            <div class="flex items-center gap-3">
+              <span class="font-medium tracking-wide">Comprar Escultura Terminada</span>
+            </div>
+            <span class="font-serif text-lg">${(producto.precioBase || 0).toLocaleString('es-CO')}</span>
+          </div>
+        </label>
+        <label class="relative flex items-center p-4 sm:p-5 border border-zinc-700 bg-zinc-900/40 rounded-2xl cursor-pointer hover:border-emerald-500/50 transition-all duration-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-zinc-800/80 has-[:checked]:shadow-[0_0_20px_rgba(16,185,129,0.1)] group">
+          <input type="radio" name="showcase-variant" value="DIY" data-price={producto.precioDIY} class="peer sr-only" />
+          <div class="flex-1 flex justify-between items-center text-sm text-zinc-400 peer-checked:text-white">
+            <div class="flex items-center gap-3">
+              <span class="font-medium tracking-wide">Kit DIY (Ármalo tú mismo)</span>
+            </div>
+            <span class="font-serif text-lg text-emerald-400">${(producto.precioDIY || 0).toLocaleString('es-CO')}</span>
+          </div>
+        </label>
+      </div>
+
+      <button id="showcase-add-cart" data-producto={JSON.stringify(producto)} class="w-full bg-white hover:bg-zinc-200 text-black font-semibold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.1)] gsap-stagger-element hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:-translate-y-1 text-base">
+        Añadir al carrito
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // 1. Conmutador de Imágenes
+    const mainShowcaseImg = document.getElementById("showcase-main-img") as HTMLImageElement;
+    const thumbButtons = document.querySelectorAll(".showcase-thumb");
+
+    thumbButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const newSrc = btn.getAttribute("data-img-src");
+        if (!newSrc || !mainShowcaseImg) return;
+
+        mainShowcaseImg.style.opacity = "0.3";
+        setTimeout(() => {
+          mainShowcaseImg.src = newSrc;
+          mainShowcaseImg.style.opacity = "1";
+        }, 120);
+
+        thumbButtons.forEach((b) => {
+          b.classList.remove("border-emerald-500", "opacity-100");
+          b.classList.add("border-transparent", "opacity-50");
+        });
+        btn.classList.remove("border-transparent", "opacity-50");
+        btn.classList.add("border-emerald-500", "opacity-100");
+      });
+    });
+
+    // 2. Reactividad de Precio de Variantes
+    const radios = document.querySelectorAll('input[name="showcase-variant"]');
+    const displayPrice = document.getElementById("showcase-display-price");
+    const btnCart = document.getElementById("showcase-add-cart");
+
+    radios.forEach((radio) => {
+      radio.addEventListener("change", (e) => {
+        const target = e.target as HTMLInputElement;
+        const newPrice = parseFloat(target.getAttribute("data-price") || "0");
+        if (displayPrice) {
+          displayPrice.style.transition = "opacity 150ms";
+          displayPrice.style.opacity = "0";
+          setTimeout(() => {
+            displayPrice.textContent = `$${newPrice.toLocaleString('es-CO')}`;
+            displayPrice.style.opacity = "1";
+          }, 150);
+        }
+      });
+    });
+
+    // 3. Añadir al Carrito (Usa siempre imagen principal)
+    btnCart?.addEventListener("click", () => {
+      const rawData = btnCart.getAttribute("data-producto");
+      if (!rawData) return;
+      const prodData = JSON.parse(rawData);
+      const activeRadio = document.querySelector('input[name="showcase-variant"]:checked') as HTMLInputElement;
+
+      document.dispatchEvent(
+        new CustomEvent("cart:add", {
+          detail: {
+            id: prodData.id,
+            name: prodData.nombre,
+            variant: activeRadio ? activeRadio.value : "Terminada",
+            price: parseFloat(activeRadio?.getAttribute("data-price") || prodData.precioBase),
+            img: prodData.imagenes?.[0] || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80',
+          },
+        }),
+      );
+    });
+  });
+</script>

@@ -1,0 +1,163 @@
+---
+// src/components/ProductModal.astro
+// Modal premium dinámico reutilizable con Galería Multivista y Scroll Independiente
+---
+
+<div id="product-modal-backdrop" class="fixed inset-0 z-[100] hidden bg-black/70 backdrop-blur-md items-center justify-center p-0 sm:p-6 opacity-0" aria-modal="true" role="dialog">
+  
+  <!-- Contenedor Principal del Modal con Altura Fija para forzar el scroll interno -->
+  <div id="product-modal-content" class="bg-[#0a0a0a] border border-zinc-800 sm:rounded-[2.5rem] w-full max-w-6xl flex flex-col lg:flex-row overflow-hidden transform sm:scale-95 opacity-0 shadow-2xl relative h-[95vh] sm:h-[90vh] lg:h-[85vh] max-h-[900px]">
+    
+    <!-- Botón Cerrar Flotante (Siempre visible encima de todo) -->
+    <button id="modal-close" class="absolute top-4 sm:top-6 right-4 sm:right-6 z-50 w-10 h-10 flex items-center justify-center bg-black/60 backdrop-blur-xl border border-white/10 text-white rounded-full hover:bg-white hover:text-black transition-all duration-300 shadow-lg group" aria-label="Cerrar modal">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-300"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+
+    <!-- COLUMNA IZQUIERDA: GALERÍA DE IMÁGENES -->
+    <div class="w-full h-[45%] sm:h-[50%] lg:w-[45%] xl:w-1/2 lg:h-full relative flex flex-col flex-shrink-0 bg-zinc-900 border-b lg:border-b-0 lg:border-r border-zinc-800 overflow-hidden group">
+      
+      <!-- Contenedor Imagen Principal Interactiva -->
+      <div class="relative w-full h-full flex-1 overflow-hidden flex items-center justify-center">
+        <!-- Glow sutil de fondo para la imagen -->
+        <div id="modal-img-glow" class="absolute inset-0 bg-emerald-500/10 blur-[100px] transition-colors duration-700 pointer-events-none"></div>
+        
+        <img 
+          id="modal-main-img" 
+          src="" 
+          alt="Producto" 
+          class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 group-hover:scale-105" 
+        />
+
+        <!-- Contador Flotante de Imagen (Ej. 1 / 4) -->
+        <div id="modal-gallery-counter" class="hidden absolute top-4 left-4 z-30 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-mono text-zinc-300 border border-white/10 select-none shadow-md">
+          <span id="modal-counter-current">1</span> / <span id="modal-counter-total">1</span>
+        </div>
+
+        <!-- Botones de Navegación Flechas (Anterior / Siguiente) -->
+        <div id="modal-nav-arrows" class="hidden absolute inset-x-3 top-1/2 -translate-y-1/2 z-30 justify-between pointer-events-none">
+          <button 
+            id="modal-prev-img" 
+            class="pointer-events-auto w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white flex items-center justify-center hover:bg-white hover:text-black transition-all shadow-xl active:scale-95" 
+            aria-label="Imagen anterior">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button 
+            id="modal-next-img" 
+            class="pointer-events-auto w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white flex items-center justify-center hover:bg-white hover:text-black transition-all shadow-xl active:scale-95" 
+            aria-label="Siguiente imagen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Miniaturas (Fijas en la base de la imagen si existen 2 o más fotos) -->
+      <div id="modal-thumbnails-container" class="hidden flex-row gap-3 p-3 sm:p-4 bg-[#080808]/90 backdrop-blur-md absolute bottom-0 w-full border-t border-zinc-800/50 overflow-x-auto no-scrollbar items-center z-20">
+        <!-- Renderizado dinámico vía JS -->
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: INFORMACIÓN DETALLADA (Con scroll invisible 'no-scrollbar') -->
+    <div id="modal-right-column" class="w-full flex-1 lg:w-[55%] xl:w-1/2 h-full overflow-y-auto no-scrollbar relative bg-[#0a0a0a] scroll-smooth">
+      <div class="p-6 sm:p-8 lg:p-12 flex flex-col gap-10 lg:gap-12 pb-12 sm:pb-16 lg:pb-16">
+        
+        <!-- Cabecera: Categoría, Título y Descripción -->
+        <div>
+          <div class="flex items-center gap-3 mb-4 mt-2 lg:mt-0">
+            <span class="w-6 h-[1px] bg-emerald-500 block"></span>
+            <p id="modal-category" class="text-xs text-emerald-400 uppercase tracking-widest font-medium"></p>
+          </div>
+          <h2 id="modal-title" class="text-3xl sm:text-4xl md:text-5xl font-serif text-white leading-[1.1] mb-6"></h2>
+          <p id="modal-desc" class="text-zinc-400 text-sm sm:text-base leading-relaxed font-light"></p>
+        </div>
+
+        <!-- Ficha Técnica Visual (Piezas, Tiempo, Nivel) -->
+        <div class="grid grid-cols-3 gap-3 sm:gap-4">
+          <div class="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-center items-start shadow-inner">
+            <span class="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-widest mb-1.5 font-medium flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              Piezas
+            </span>
+            <span id="modal-pieces" class="text-white font-serif text-xl sm:text-2xl"></span>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-center items-start shadow-inner">
+            <span class="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-widest mb-1.5 font-medium flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              Tiempo
+            </span>
+            <span id="modal-time" class="text-white font-serif text-xl sm:text-2xl"></span>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-center items-start shadow-inner">
+            <span class="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-widest mb-1.5 font-medium flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              Nivel
+            </span>
+            <span id="modal-difficulty" class="text-emerald-400 font-serif text-lg sm:text-xl truncate w-full"></span>
+          </div>
+        </div>
+
+        <!-- Sección de Colores (Dinámica) -->
+        <div id="modal-colors-section" class="flex flex-col gap-4">
+          <div class="flex justify-between items-end">
+            <h3 class="text-sm font-medium tracking-wide text-zinc-300">Composición de Módulos</h3>
+            <span id="modal-total-colors" class="text-xs text-zinc-500"></span>
+          </div>
+          
+          <!-- Barra Proporcional de Colores -->
+          <div id="modal-colors-bar" class="w-full h-2 rounded-full overflow-hidden flex bg-zinc-900 border border-zinc-800/80">
+             <!-- Llenado vía JS -->
+          </div>
+
+          <!-- Píldoras de Colores -->
+          <div id="modal-colors-grid" class="flex flex-wrap gap-2.5 mt-2">
+            <!-- Llenado vía JS -->
+          </div>
+        </div>
+
+        <hr class="border-zinc-800/60 my-2" />
+
+        <!-- Sección de Compra (Al final del scroll) -->
+        <div class="flex flex-col gap-6">
+          <div class="flex items-end justify-between">
+            <h3 class="text-lg font-serif text-white">Selecciona Formato</h3>
+            <p id="modal-display-price" class="text-3xl sm:text-4xl font-serif text-white transition-opacity duration-300">$0</p>
+          </div>
+          
+          <div class="flex flex-col gap-3">
+            <!-- Opción Terminada -->
+            <label class="relative flex items-center p-4 sm:p-5 border border-zinc-700 bg-zinc-900/40 rounded-2xl cursor-pointer hover:border-emerald-500/50 transition-all duration-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-zinc-800/80 has-[:checked]:shadow-[0_0_20px_rgba(16,185,129,0.1)] group">
+              <input type="radio" name="modal-variant" value="Terminada" id="modal-radio-base" class="peer sr-only" checked />
+              <div class="flex-1 flex justify-between items-center text-sm text-zinc-400 peer-checked:text-white">
+                <div class="flex items-center gap-3">
+                  <div class="w-4 h-4 border border-zinc-500 rounded-full group-has-[:checked]:border-emerald-500 group-has-[:checked]:border-4 transition-all flex-shrink-0"></div>
+                  <span class="font-medium tracking-wide">Escultura Terminada</span>
+                </div>
+                <span id="modal-price-base-label" class="font-serif text-lg"></span>
+              </div>
+            </label>
+            
+            <!-- Opción DIY -->
+            <label class="relative flex items-center p-4 sm:p-5 border border-zinc-700 bg-zinc-900/40 rounded-2xl cursor-pointer hover:border-emerald-500/50 transition-all duration-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-zinc-800/80 has-[:checked]:shadow-[0_0_20px_rgba(16,185,129,0.1)] group">
+              <input type="radio" name="modal-variant" value="DIY" id="modal-radio-diy" class="peer sr-only" />
+              <div class="flex-1 flex justify-between items-center text-sm text-zinc-400 peer-checked:text-white">
+                <div class="flex items-center gap-3">
+                  <div class="w-4 h-4 border border-zinc-500 rounded-full group-has-[:checked]:border-emerald-500 group-has-[:checked]:border-4 transition-all flex-shrink-0"></div>
+                  <span class="font-medium tracking-wide">Kit DIY (Ármalo tú mismo)</span>
+                </div>
+                <span id="modal-price-diy-label" class="font-serif text-lg text-emerald-400"></span>
+              </div>
+            </label>
+          </div>
+
+          <button id="modal-add-cart" class="w-full bg-white hover:bg-zinc-200 text-black font-semibold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:-translate-y-1 text-base mt-2 relative overflow-hidden group">
+            <span class="relative z-10 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+              Añadir al carrito
+            </span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

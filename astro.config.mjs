@@ -1,8 +1,23 @@
+// @ts-check
 import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+import sanity from '@sanity/astro';
+import react from '@astrojs/react';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://LesPov.github.io',
-  base: '/origami-3d-lipud',
-  integrations: [tailwind()],
+  integrations: [
+    sanity({
+      projectId: 'xc9qh5w3',
+      dataset: 'production',
+      apiVersion: '2026-03-01',
+      useCdn: false,
+      studioBasePath: '/admin',
+      studioRouterHistory: 'hash',
+    }),
+    react(),
+  ],
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });

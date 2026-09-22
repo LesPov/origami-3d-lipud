@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   OCULTAMIENTO TOTAL Y SEGURO DE SCROLLBAR (Scroll 100% funcional)
+   Compatible con Firefox, Safari, Chrome, Edge y navegadores móviles.
+   ========================================================================== */
+html,
+body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge clásico */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* Ocultar scrollbar en contenedores específicos preservando scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Scroll padding para anclajes directos */
+html {
+  scroll-padding-top: 88px;
+}
+
+/* Clases base para animaciones y estados */
+@layer components {
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.7s cubic-bezier(0.5, 0, 0, 1);
+  }
+  .animate-on-scroll.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .active-step {
+    border-color: rgba(16, 185, 129, 0.5) !important;
+    color: rgba(52, 211, 153, 1) !important;
+    background-color: rgba(6, 78, 59, 0.25) !important;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.2) !important;
+  }
+}
