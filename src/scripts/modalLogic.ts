@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newSrc = currentProduct.imagenes[currentImageIndex];
 
     if (elMainImg) {
-      elMainImg.style.opacity = "0.4";
+      elMainImg.style.opacity = "0.3";
       setTimeout(() => {
         elMainImg.src = newSrc;
         elMainImg.alt = `${currentProduct?.nombre} - Vista ${currentImageIndex + 1}`;
@@ -95,7 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderProductData(product: Producto) {
     if (!product) return;
 
-    // 1. Textos descriptivos
     if (elTitle) elTitle.textContent = product.nombre;
     if (elCategory) elCategory.textContent = product.categoria;
     if (elDesc) elDesc.textContent = product.descripcion || "Sin descripción disponible.";
@@ -103,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (elTime) elTime.textContent = product.tiempo || "N/A";
     if (elDifficulty) elDifficulty.textContent = product.dificultad || "N/A";
 
-    // 2. Precios y variantes
     if (elRadioBase) {
       elRadioBase.checked = true;
       elRadioBase.value = "Terminada";
@@ -112,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (elPriceDiyLabel) elPriceDiyLabel.textContent = `$${(product.precioDIY || 0).toLocaleString('es-CO')}`;
     updateDisplayPrice(product.precioBase || 0);
 
-    // 3. Galería Dinámica
     const images = Array.isArray(product.imagenes) && product.imagenes.length > 0 
       ? product.imagenes 
       : ['https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80'];
@@ -144,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         images.forEach((imgUrl, index) => {
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.className = `w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all cursor-pointer ${index === 0 ? "border-emerald-500 opacity-100" : "border-transparent opacity-50 hover:opacity-100"}`;
+          btn.className = `w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all cursor-pointer ${index === 0 ? "border-emerald-500 opacity-100" : "border-transparent opacity-50 hover:opacity-100"}`;
           btn.setAttribute("aria-label", `Ver vista ${index + 1} de ${product.nombre}`);
           btn.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover pointer-events-none" alt="Miniatura ${index + 1}" loading="lazy" />`;
           
@@ -168,7 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // 4. Módulos y composición de colores
     if (elColorsSection && elColorsBar && elColorsGrid && elTotalColors) {
       elColorsBar.innerHTML = '';
       elColorsGrid.innerHTML = '';
@@ -187,16 +183,16 @@ document.addEventListener("DOMContentLoaded", () => {
           const segment = document.createElement("div");
           segment.style.width = `${percent}%`;
           segment.style.backgroundColor = color.hex;
-          segment.className = "h-full transition-all duration-500 hover:opacity-80";
+          segment.className = "h-full transition-all duration-300 hover:opacity-80";
           segment.title = `${color.nombre} (${percent.toFixed(1)}%)`;
           elColorsBar.appendChild(segment);
 
           const pill = document.createElement("div");
-          pill.className = "flex items-center gap-2 bg-[#121212] border border-zinc-800 px-3 py-1.5 rounded-full shadow-sm";
+          pill.className = "flex items-center gap-1.5 bg-zinc-900 border border-white/10 px-2.5 py-1 rounded-full shadow-xs";
           pill.innerHTML = `
-            <span class="w-3.5 h-3.5 rounded-full border border-white/20 shadow-inner" style="background-color: ${color.hex};"></span>
-            <span class="text-xs text-zinc-300 font-medium">${color.nombre}</span>
-            <span class="text-xs text-zinc-500 ml-1 font-mono">${color.cantidad}</span>
+            <span class="w-3 h-3 rounded-full border border-white/20 shadow-inner flex-shrink-0" style="background-color: ${color.hex};"></span>
+            <span class="text-[11px] text-zinc-300 font-medium">${color.nombre}</span>
+            <span class="text-[10px] text-zinc-500 ml-0.5 font-mono">${color.cantidad}</span>
           `;
           elColorsGrid.appendChild(pill);
         });
@@ -223,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       elDisplayPrice.textContent = `$${price.toLocaleString('es-CO')}`;
       elDisplayPrice.style.opacity = "1";
-    }, 150);
+    }, 120);
   }
 
   radios.forEach(radio => {
@@ -253,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }));
 
     const originalText = btnAddCart.innerHTML;
-    btnAddCart.innerHTML = `<span class="relative z-10 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600"><polyline points="20 6 9 17 4 12"></polyline></svg> ¡Añadido!</span>`;
+    btnAddCart.innerHTML = `<span class="relative z-10 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-700"><polyline points="20 6 9 17 4 12"></polyline></svg> ¡Añadido!</span>`;
     btnAddCart.classList.add("bg-emerald-400", "text-black");
     btnAddCart.classList.remove("bg-white");
     
@@ -278,16 +274,19 @@ document.addEventListener("DOMContentLoaded", () => {
     backdrop.classList.add("flex");
     
     if (gsap) {
-      gsap.to(backdrop, { opacity: 1, duration: 0.3, ease: "power2.out" });
+      gsap.to(backdrop, { opacity: 1, duration: 0.25, ease: "power2.out" });
       
       const isMobile = window.innerWidth < 640;
       if (isMobile) {
         gsap.fromTo(content, 
-          { y: "100%", opacity: 1, scale: 1 }, 
-          { y: "0%", duration: 0.5, ease: "power3.out" }
+          { y: "100%", opacity: 1 }, 
+          { y: "0%", duration: 0.4, ease: "power3.out" }
         );
       } else {
-        gsap.to(content, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.2)" });
+        gsap.fromTo(content,
+          { scale: 0.96, opacity: 0, y: 0 },
+          { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.1)" }
+        );
       }
     } else {
       backdrop.style.opacity = "1";
@@ -302,16 +301,17 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (gsap) {
       const isMobile = window.innerWidth < 640;
+      
       if (isMobile) {
-        gsap.to(content, { y: "100%", duration: 0.4, ease: "power3.in" });
+        gsap.to(content, { y: "100%", duration: 0.35, ease: "power3.in" });
       } else {
-        gsap.to(content, { opacity: 0, scale: 0.95, duration: 0.3, ease: "power2.in" });
+        gsap.to(content, { opacity: 0, scale: 0.96, duration: 0.25, ease: "power2.in" });
       }
-      gsap.to(backdrop, { opacity: 0, duration: 0.3, delay: 0.1, onComplete: resetDOM });
+      gsap.to(backdrop, { opacity: 0, duration: 0.25, delay: 0.08, onComplete: resetDOM });
     } else {
       backdrop.style.opacity = "0";
       content.style.opacity = "0";
-      setTimeout(resetDOM, 300);
+      setTimeout(resetDOM, 250);
     }
   }
 
@@ -323,11 +323,11 @@ document.addEventListener("DOMContentLoaded", () => {
     currentImageIndex = 0;
     
     if (content) {
-       if (window.innerWidth < 640) {
-         gsap?.set(content, { y: "100%" });
-       } else {
-         gsap?.set(content, { scale: 0.95, y: "0%" });
-       }
+      if (window.innerWidth < 640) {
+        gsap?.set(content, { y: "100%" });
+      } else {
+        gsap?.set(content, { scale: 0.96, y: "0%" });
+      }
     }
   }
 

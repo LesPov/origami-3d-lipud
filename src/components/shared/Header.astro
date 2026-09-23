@@ -1,50 +1,47 @@
 ---
 // src/components/shared/Header.astro
 const navLinks = [
-  { name: "Inicio", href: "#" },
-  { name: "Destacado", href: "#showcase" },
-  { name: "Catálogo", href: "#catalogo" },
-  { name: "Kits DIY", href: "#diy" },
-  { name: "Proceso", href: "#proceso" },
+  { name: "Inicio", href: "#", num: "01" },
+  { name: "Destacado", href: "#showcase", num: "02" },
+  { name: "Catálogo", href: "#catalogo", num: "03" },
+  { name: "Kits DIY", href: "#diy", num: "04" },
+  { name: "Proceso", href: "#proceso", num: "05" },
 ];
 ---
 
 <header
   id="main-header"
-  class="fixed top-0 w-full z-50 transition-transform duration-500 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl"
+  class="fixed top-0 w-full z-50 transition-all duration-300 bg-[#050505]/85 backdrop-blur-xl border-b border-white/5 shadow-2xl"
 >
   <div
-    class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between relative"
+    class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between relative"
   >
-    <!-- NUEVO LOGO: Levos 3D (Diseño Papel) -->
-    <a href="#" class="nav-link flex items-center gap-3 group z-50">
-      <!-- Icono Origami Papel 3D -->
+    <!-- LOGO: Levos 3D (Preservado íntegro) -->
+    <a href="#" class="nav-link flex items-center gap-2.5 sm:gap-3 group z-50 select-none">
       <div
-        class="w-9 h-9 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center transform group-hover:rotate-[15deg] group-hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.4)] border border-emerald-300/30"
+        class="w-8.5 h-8.5 sm:w-9 sm:h-9 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center transform group-hover:rotate-[15deg] group-hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.35)] border border-emerald-300/30"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
+          width="19"
+          height="19"
           viewBox="0 0 24 24"
           fill="none"
           stroke="#050505"
-          stroke-width="2"
+          stroke-width="2.2"
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <!-- Figura geométrica estilo pliegue de papel / módulo 3D -->
           <polygon points="12 2 22 8.5 12 15 2 8.5 12 2"></polygon>
           <polygon points="12 22 22 15 12 15 2 15 12 22"></polygon>
           <polyline points="2 15 12 8.5 22 15"></polyline>
         </svg>
       </div>
 
-      <!-- Texto Levos 3D (con 3D arriba de la s) -->
-      <span class="font-serif text-2xl text-white tracking-wide">
+      <span class="font-serif text-xl sm:text-2xl text-white tracking-wide">
         Levo<span class="relative inline-block">
           <span
-            class="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[9px] font-sans font-black text-emerald-400 tracking-wider drop-shadow-[0_0_10px_rgba(16,185,129,0.9)] uppercase"
+            class="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[8.5px] font-sans font-black text-emerald-400 tracking-wider drop-shadow-[0_0_10px_rgba(16,185,129,0.9)] uppercase"
           >
             3D
           </span>
@@ -53,27 +50,27 @@ const navLinks = [
       </span>
     </a>
 
-    <!-- Desktop Nav -->
+    <!-- Desktop Nav (Conservada al 100%) -->
     <nav class="hidden lg:flex items-center gap-8">
       {
         navLinks.map((link) => (
           <a
             href={link.href}
-            class="nav-link text-sm font-medium text-zinc-400 hover:text-white transition-colors relative group"
+            class="nav-link text-sm font-medium text-zinc-400 hover:text-white transition-colors relative group py-1"
           >
             {link.name}
-            <span class="absolute -bottom-2 left-0 w-0 h-0.5 bg-emerald-500 transition-all duration-300 group-hover:w-full" />
+            <span class="absolute -bottom-1.5 left-0 w-0 h-0.5 bg-emerald-500 transition-all duration-300 group-hover:w-full" />
           </a>
         ))
       }
     </nav>
 
-    <!-- Actions (Carrito + Menu Móvil) -->
-    <div class="flex items-center gap-4 z-50">
+    <!-- Actions (Carrito + Menú Móvil Mejorado) -->
+    <div class="flex items-center gap-2.5 sm:gap-3.5 z-50">
       <!-- Botón Carrito -->
       <button
         id="cart-toggle-btn"
-        class="relative w-10 h-10 rounded-full bg-zinc-900/80 border border-zinc-800 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all hover:border-emerald-500/50 group"
+        class="relative w-10 h-10 sm:w-10.5 sm:h-10.5 rounded-full bg-zinc-900/80 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all hover:border-emerald-500/40 group active:scale-95"
         aria-label="Abrir Carrito"
       >
         <svg
@@ -86,7 +83,7 @@ const navLinks = [
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="group-hover:scale-110 transition-transform"
+          class="group-hover:scale-105 transition-transform"
           ><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"
           ></circle><path
             d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
@@ -102,37 +99,57 @@ const navLinks = [
         </span>
       </button>
 
-      <!-- Toggle Menú Móvil -->
+      <!-- Toggle Menú Móvil Ergonómico -->
       <button
         id="mobile-menu-btn"
-        class="lg:hidden w-10 h-10 rounded-full bg-zinc-900/80 border border-zinc-800 flex flex-col items-center justify-center gap-1.5 text-white"
-        aria-label="Abrir Menú"
+        class="lg:hidden w-10 h-10 sm:w-10.5 sm:h-10.5 rounded-full bg-zinc-900/80 border border-white/10 flex flex-col items-center justify-center gap-1.5 text-zinc-300 hover:text-white hover:border-white/20 transition-all active:scale-95"
+        aria-label="Abrir Menú de Navegación"
+        aria-expanded="false"
       >
         <span
-          class="w-4 h-[2px] bg-current transform transition-all duration-300 origin-center"
+          class="w-4.5 h-[2px] bg-current transform transition-all duration-300 origin-center"
         ></span>
         <span
-          class="w-4 h-[2px] bg-current transform transition-all duration-300 origin-center"
+          class="w-4.5 h-[2px] bg-current transform transition-all duration-300 origin-center"
         ></span>
       </button>
     </div>
   </div>
 
-  <!-- Menú Móvil Overlay -->
+  <!-- Menú Móvil / Tablet Overlay Rediseñado -->
   <div
     id="mobile-menu"
-    class="fixed inset-0 bg-[#050505]/95 backdrop-blur-xl z-40 lg:hidden flex flex-col items-center justify-center gap-8 transform -translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] pt-20"
+    class="fixed inset-0 top-0 left-0 w-full h-[100dvh] bg-[#070709]/95 backdrop-blur-2xl z-40 lg:hidden flex flex-col justify-between transform -translate-y-full transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] px-6 pt-24 pb-8 overflow-y-auto no-scrollbar"
   >
-    {
-      navLinks.map((link) => (
-        <a
-          href={link.href}
-          class="nav-link text-2xl font-serif text-zinc-400 hover:text-white transition-colors"
-        >
-          {link.name}
-        </a>
-      ))
-    }
+    <!-- Lista de Navegación Móvil -->
+    <div class="flex flex-col gap-2.5 my-auto max-w-md w-full mx-auto">
+      <span class="text-[10px] uppercase tracking-widest text-emerald-400 font-semibold mb-2 block">Navegación</span>
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class="nav-link flex items-center justify-between p-4 rounded-2xl bg-zinc-900/40 hover:bg-zinc-900/80 border border-white/5 hover:border-emerald-500/30 transition-all duration-200 active:scale-[0.98] group"
+          >
+            <span class="text-xl sm:text-2xl font-serif text-white group-hover:text-emerald-300 transition-colors">
+              {link.name}
+            </span>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-zinc-500 group-hover:text-emerald-400/70 transition-colors">{link.num}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+
+    <!-- Footer del Menú Móvil (Acceso directo y feedback) -->
+    <div class="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-md w-full mx-auto">
+      <button id="mobile-cart-direct-btn" class="w-full sm:w-auto flex-1 flex items-center justify-center gap-2.5 bg-emerald-500 text-black py-3.5 px-5 rounded-xl font-semibold text-sm shadow-[0_0_20px_rgba(16,185,129,0.25)] active:scale-[0.98] transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        Ver Carrito (<span id="mobile-cart-count-text">0</span>)
+      </button>
+      <p class="text-xs text-zinc-500 font-light text-center">Arte en Origami 3D hecho a mano</p>
+    </div>
   </div>
 </header>
 
@@ -140,12 +157,11 @@ const navLinks = [
   document.addEventListener("DOMContentLoaded", () => {
     // --- 1. LÓGICA DEL CARRITO (REACTIVIDAD) ---
     const cartCounter = document.getElementById("cart-counter");
+    const mobileCartCountText = document.getElementById("mobile-cart-count-text");
     const cartToggleBtn = document.getElementById("cart-toggle-btn");
+    const mobileCartDirectBtn = document.getElementById("mobile-cart-direct-btn");
 
-    // Escucha al Store Central para actualizar el Badge
-    document.addEventListener("cart:updated", (e: Event) => {
-      const customEvent = e as CustomEvent;
-      const count = customEvent.detail.count;
+    function updateCounters(count: number) {
       if (cartCounter) {
         if (count > 0) {
           cartCounter.textContent = count.toString();
@@ -156,14 +172,26 @@ const navLinks = [
           cartCounter.classList.remove("scale-100");
         }
       }
+      if (mobileCartCountText) {
+        mobileCartCountText.textContent = count.toString();
+      }
+    }
+
+    document.addEventListener("cart:updated", (e: Event) => {
+      const customEvent = e as CustomEvent;
+      updateCounters(customEvent.detail.count);
     });
 
-    // Abre el Panel del Carrito
     cartToggleBtn?.addEventListener("click", () => {
       document.dispatchEvent(new CustomEvent("cart:toggle"));
     });
 
-    // Hidratación Inicial: Por si el script carga después del HTML, leemos directo
+    mobileCartDirectBtn?.addEventListener("click", () => {
+      if (menuOpen) toggleMenu();
+      document.dispatchEvent(new CustomEvent("cart:toggle"));
+    });
+
+    // Hidratación Inicial
     try {
       const initialCart = JSON.parse(
         localStorage.getItem("origami_cart") || "[]",
@@ -172,11 +200,7 @@ const navLinks = [
         (acc: number, item: any) => acc + item.quantity,
         0,
       );
-      if (initialCount > 0 && cartCounter) {
-        cartCounter.textContent = initialCount.toString();
-        cartCounter.classList.remove("scale-0");
-        cartCounter.classList.add("scale-100");
-      }
+      updateCounters(initialCount);
     } catch (err) {
       console.warn("Error leyendo carrito inicial", err);
     }
@@ -193,20 +217,18 @@ const navLinks = [
       "scroll",
       () => {
         const currentScroll = window.scrollY;
-        // Solo ocultar/mostrar si el menú móvil está cerrado
         if (!menuOpen && header) {
-          if (currentScroll > 100 && currentScroll > lastScroll) {
+          if (currentScroll > 90 && currentScroll > lastScroll) {
             header.style.transform = "translateY(-100%)";
           } else {
             header.style.transform = "translateY(0)";
           }
 
-          // Fondo un poco más sólido al scrollear
-          if (currentScroll > 50) {
+          if (currentScroll > 40) {
             header.classList.add("bg-[#050505]/95");
-            header.classList.remove("bg-[#050505]/80");
+            header.classList.remove("bg-[#050505]/85");
           } else {
-            header.classList.add("bg-[#050505]/80");
+            header.classList.add("bg-[#050505]/85");
             header.classList.remove("bg-[#050505]/95");
           }
         }
@@ -217,6 +239,8 @@ const navLinks = [
 
     function toggleMenu() {
       menuOpen = !menuOpen;
+      mobileMenuBtn?.setAttribute("aria-expanded", menuOpen ? "true" : "false");
+
       if (menuOpen) {
         mobileMenu?.classList.remove("-translate-y-full");
         mobileMenu?.classList.add("translate-y-0");
@@ -255,34 +279,30 @@ const navLinks = [
         window.scrollY + targetElement.getBoundingClientRect().top;
       let targetScrollPosition = absoluteTop - headerHeight;
 
-      // ESTRATEGIA INTELIGENTE POR SECCIÓN (Ignorando paddings masivos)
       if (targetId === "#showcase") {
-        // Buscamos el contenedor interno (div) para saltar el padding py-32
         const innerContent = targetElement.querySelector("div");
         if (innerContent) {
           targetScrollPosition =
             window.scrollY +
             innerContent.getBoundingClientRect().top -
             headerHeight -
-            40;
+            30;
         }
       } else if (
         targetId === "#catalogo" ||
         targetId === "#diy" ||
         targetId === "#proceso"
       ) {
-        // Alineamos directamente con el título h2 de la sección
         const titleElement = targetElement.querySelector("h2");
         if (titleElement) {
           targetScrollPosition =
             window.scrollY +
             titleElement.getBoundingClientRect().top -
             headerHeight -
-            30;
+            25;
         }
       }
 
-      // Forzar header visible post-click
       if (header) header.style.transform = "translateY(0)";
 
       window.scrollTo({
